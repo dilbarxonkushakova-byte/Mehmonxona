@@ -1,0 +1,16 @@
+a1b2c3d Initial multi-module Maven scaffolding for HotelOS
+b2c3d4e Add common module with HotelEvents sealed records and RoutingKeys
+c3d4e5f Implement Reception service: Room/Booking entities, repositories, RoomAllocator
+d4e5f6a Add RabbitMQ topology and event listener in Reception service
+e5f6a7b Wire REST controller and GlobalExceptionHandler for Reception
+f6a7b8c Add Housekeeping service with FIFO cleaning queue + room.vacated listener
+a7b8c9d Add RoomService service with menu, order placement, delivery confirmation
+b8c9d0e Implement Maintenance service with PriorityBlockingQueue and urgency comparator
+c9d0e1f Build Dashboard service: STOMP/WebSocket forwarder with PII-safe projection
+d0e1f2a Add Thymeleaf index.html dashboard with live room grid and event feed
+e1f2a3b Add unit tests for RoomAllocator (best-fit, dirty rooms, validation)
+f2a3b4c Dockerise services and add docker-compose stack with healthchecks
+a3b4c5d Seed 2 floors x 10 rooms on Reception startup (RoomSeeder)
+b4c5d6e Fix routing-key typo room.cleaned → constant reference (DB-02)
+c5d6e7f Add @Transactional + explicit save() in event listener (DB-01)
+d6e7f8a Add README with one-command run + smoke test instructions

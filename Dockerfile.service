@@ -1,0 +1,19 @@
+# Multi-stage build used by every service. Pass MODULE=<service-folder> via
+# docker-compose build args.
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /src
+COPY pom.xml .
+COPY common/ common/
+COPY reception-service/ reception-service/
+COPY housekeeping-service/ housekeeping-service/
+COPY roomservice-service/ roomservice-service/
+COPY maintenance-service/ maintenance-service/
+COPY dashboard-service/ dashboard-service/
+RUN mvn -B -q -DskipTests package
+
+FROM eclipse-temurin:21-jre-alpine
+ARG MODULE
+ENV MODULE=${MODULE}
+WORKDIR /app
+COPY --from=build /src/${MODULE}/target/*.jar app.jar
+ENTRYPOINT ["sh", "-c", "java -jar /app/app.jar"]

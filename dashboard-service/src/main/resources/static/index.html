@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HotelOS Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+    <h1>🏨 HotelOS Dashboard</h1>
+
+    <div class="status-panel">
+        <span id="roomCount">Rooms: 0</span>
+        <span id="dirtyCount">Dirty: 0</span>
+        <span id="orderCount">Orders: 0</span>
+        <span id="ticketCount">Tickets: 0</span>
+    </div>
+</header>
+
+<nav class="navbar">
+    <div>
+      <button onclick="showSection('receptionSection')">Reception</button>
+    <button onclick="showSection('housekeepingSection')">Housekeeping</button>
+    <button onclick="showSection('roomServiceSection')">Room Service</button>
+    <button onclick="showSection('maintenanceSection')">Maintenance</button>
+    </div>
+
+    <div>
+      <h2>
+    <span class="live-indicator">
+        <span class="live-dot"></span>
+        LIVE
+    </span>
+</h2>
+    </div>
+
+</nav>
+
+<main>
+
+    <!-- RECEPTION -->
+
+    <section id="receptionSection" class="section active">
+
+        <div class="section-header">
+            <h2>Reception</h2>
+            <button onclick="loadRooms()">Refresh Rooms</button>
+        </div>
+
+        <div id="roomsContainer" class="room-grid">
+
+        </div>
+
+    </section>
+
+    <!-- HOUSEKEEPING -->
+
+    <section id="housekeepingSection" class="section">
+
+        <div class="section-header">
+            <h2>Housekeeping Queue</h2>
+            <button onclick="loadHousekeeping()">Refresh Queue</button>
+        </div>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Room</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+
+            <tbody id="housekeepingTable">
+
+            </tbody>
+        </table>
+
+    </section>
+
+    <!-- ROOM SERVICE -->
+
+    <section id="roomServiceSection" class="section">
+
+        <div class="section-header">
+            <h2>Room Service</h2>
+            <button onclick="loadOrders()">Refresh Orders</button>
+        </div>
+
+        <div class="card">
+
+            <h3>Place New Order</h3>
+
+            <input
+                    type="number"
+                    id="orderRoomNumber"
+                    placeholder="Room Number">
+
+            <select id="menuSelect">
+
+            </select>
+
+            <button onclick="placeOrder()">
+                Place Order
+            </button>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Orders</h3>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Room</th>
+                    <th>Item</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+
+                <tbody id="ordersTable">
+
+                </tbody>
+            </table>
+
+        </div>
+
+    </section>
+
+    <!-- MAINTENANCE -->
+
+    <section id="maintenanceSection" class="section">
+
+        <div class="section-header">
+            <h2>Maintenance</h2>
+            <button onclick="loadTickets()">Refresh Tickets</button>
+        </div>
+
+        <div class="card">
+
+            <h3>Report Issue</h3>
+
+            <input
+                    type="number"
+                    id="ticketRoomNumber"
+                    placeholder="Room Number">
+
+            <input
+                    type="text"
+                    id="ticketIssue"
+                    placeholder="Issue">
+
+            <input
+                    type="number"
+                    id="ticketUrgency"
+                    min="1"
+                    max="10"
+                    value="5"
+                    placeholder="Urgency">
+
+            <button onclick="reportIssue()">
+                Report
+            </button>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Maintenance Tickets</h3>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Room</th>
+                    <th>Issue</th>
+                    <th>Urgency</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+
+                <tbody id="ticketsTable">
+
+                </tbody>
+            </table>
+
+        </div>
+
+    </section>
+
+</main>
+
+<!-- BOOKING MODAL -->
+
+<div id="bookingModal" class="modal">
+
+    <div class="modal-content">
+
+        <h2>Book Room</h2>
+
+        <input
+                type="hidden"
+                id="selectedBeds">
+
+        <input
+                type="text"
+                id="guestId"
+                placeholder="Guest ID">
+
+        <label>Check In</label>
+        <input
+                type="datetime-local"
+                id="checkIn">
+
+        <label>Check Out</label>
+        <input
+                type="datetime-local"
+                id="checkOut">
+
+        <div class="modal-buttons">
+
+            <button onclick="confirmBooking()">
+                Confirm Booking
+            </button>
+
+            <button onclick="closeModal()">
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- TOAST -->
+
+<div id="toast" class="toast">
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>

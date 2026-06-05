@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: dashboard-service
+  web:
+    resources:
+      static-locations: classpath:/static/
+  thymeleaf:
+    enabled: false
+    cache: false
+  rabbitmq:
+    host: ${RABBIT_HOST:localhost}
+    port: 5672
+    username: ${RABBIT_USER:guest}
+    password: ${RABBIT_PASS:guest}
+server:
+  port: 8080

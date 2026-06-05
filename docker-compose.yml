@@ -1,0 +1,72 @@
+version: "3.9"
+
+# ============================================================================
+# HotelOS — one-command stack.
+#   docker compose up --build
+# ============================================================================
+
+services:
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: hotelos-rabbit
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # management UI (guest/guest)
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: hotelos-postgres
+    environment:
+      POSTGRES_USER: hotelos
+      POSTGRES_PASSWORD: hotelos
+      POSTGRES_DB: hotelos_reception
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hotelos -d hotelos_reception"]
+      interval: 5s
+      retries: 10
+
+  reception:
+    build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: reception-service } }
+    environment:
+      RABBIT_HOST: rabbitmq
+      DB_HOST: postgres
+    ports: ["8081:8081"]
+    depends_on:
+      rabbitmq:  { condition: service_healthy }
+      postgres:  { condition: service_healthy }
+
+  housekeeping:
+    build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: housekeeping-service } }
+    environment: { RABBIT_HOST: rabbitmq }
+    ports: ["8082:8082"]
+    depends_on:
+      rabbitmq: { condition: service_healthy }
+
+  roomservice:
+    build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: roomservice-service } }
+    environment: { RABBIT_HOST: rabbitmq }
+    ports: ["8083:8083"]
+    depends_on:
+      rabbitmq: { condition: service_healthy }
+
+  maintenance:
+    build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: maintenance-service } }
+    environment: { RABBIT_HOST: rabbitmq }
+    ports: ["8084:8084"]
+    depends_on:
+      rabbitmq: { condition: service_healthy }
+
+  dashboard:
+    build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: dashboard-service } }
+    environment: { RABBIT_HOST: rabbitmq }
+    ports: ["8080:8080"]
+    depends_on:
+      rabbitmq: { condition: service_healthy }

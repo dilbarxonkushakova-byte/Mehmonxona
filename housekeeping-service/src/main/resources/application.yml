@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: housekeeping-service
+  rabbitmq:
+    host: ${RABBIT_HOST:localhost}
+    port: 5672
+    username: ${RABBIT_USER:guest}
+    password: ${RABBIT_PASS:guest}
+server:
+  port: 8082
