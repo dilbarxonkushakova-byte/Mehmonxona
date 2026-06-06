@@ -1,18 +1,13 @@
 version: "3.9"
 
-# ============================================================================
-# HotelOS — one-command stack.
-#   docker compose up --build
-# ============================================================================
-
 services:
 
   rabbitmq:
     image: rabbitmq:3.13-management
     container_name: hotelos-rabbit
     ports:
-      - "5672:5672"     # AMQP
-      - "15672:15672"   # management UI (guest/guest)
+      - "5672:5672"
+      - "15672:15672"
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 10s
@@ -33,40 +28,73 @@ services:
       interval: 5s
       retries: 10
 
+  # ================= RECEPTION =================
   reception:
-    build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: reception-service } }
+    build:
+      context: .
+      dockerfile: Dockerfile.service
+      args:
+        MODULE: reception-service
     environment:
       RABBIT_HOST: rabbitmq
       DB_HOST: postgres
-    ports: ["8081:8081"]
-    depends_on:
-      rabbitmq:  { condition: service_healthy }
-      postgres:  { condition: service_healthy }
+      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+    ports:
+      - "8081:8081"
+      - "5005:5005"
 
+  # ================= HOUSEKEEPING =================
   housekeeping:
-    build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: housekeeping-service } }
-    environment: { RABBIT_HOST: rabbitmq }
-    ports: ["8082:8082"]
-    depends_on:
-      rabbitmq: { condition: service_healthy }
+    build:
+      context: .
+      dockerfile: Dockerfile.service
+      args:
+        MODULE: housekeeping-service
+    environment:
+      RABBIT_HOST: rabbitmq
+      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+    ports:
+      - "8082:8082"
+      - "5006:5005"   # 🔥 DEBUG PORT FIX
 
+  # ================= ROOMSERVICE =================
   roomservice:
-    build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: roomservice-service } }
-    environment: { RABBIT_HOST: rabbitmq }
-    ports: ["8083:8083"]
-    depends_on:
-      rabbitmq: { condition: service_healthy }
+    build:
+      context: .
+      dockerfile: Dockerfile.service
+      args:
+        MODULE: roomservice-service
+    environment:
+      RABBIT_HOST: rabbitmq
+      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+    ports:
+      - "8083:8083"
+      - "5007:5005"   # 🔥 DEBUG PORT FIX
 
+  # ================= MAINTENANCE =================
   maintenance:
-    build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: maintenance-service } }
-    environment: { RABBIT_HOST: rabbitmq }
-    ports: ["8084:8084"]
-    depends_on:
-      rabbitmq: { condition: service_healthy }
+    build:
+      context: .
+      dockerfile: Dockerfile.service
+      args:
+        MODULE: maintenance-service
+    environment:
+      RABBIT_HOST: rabbitmq
+      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+    ports:
+      - "8084:8084"
+      - "5008:5005"   # 🔥 DEBUG PORT FIX
 
+  # ================= DASHBOARD =================
   dashboard:
-    build: { context: ., dockerfile: Dockerfile.service, args: { MODULE: dashboard-service } }
-    environment: { RABBIT_HOST: rabbitmq }
-    ports: ["8080:8080"]
-    depends_on:
-      rabbitmq: { condition: service_healthy }
+    build:
+      context: .
+      dockerfile: Dockerfile.service
+      args:
+        MODULE: dashboard-service
+    environment:
+      RABBIT_HOST: rabbitmq
+      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+    ports:
+      - "8080:8080"
+      - "5009:5005"   # 🔥 DEBUG PORT FIX
