@@ -23,9 +23,7 @@ import static com.grandstay.hotelos.reception.config.RabbitConfig.QUEUE;
 @Component
 @RabbitListener(queues = QUEUE)
 public class ReceptionEventListener {
-
     private static final Logger log = LoggerFactory.getLogger(ReceptionEventListener.class);
-
     private final RoomRepository rooms;
     private final BookingRepository bookings;
 

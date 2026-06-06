@@ -37,3 +37,5 @@ public final class RoomAllocator {
                         .thenComparingInt(Room::getNumber));
     }
 }
+
+// Room Allocator fix
